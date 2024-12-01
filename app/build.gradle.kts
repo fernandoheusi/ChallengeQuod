@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-
+    // Dependências existentes
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -66,6 +66,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    
-    implementation ("androidx.navigation:navigation-compose:2.6.0")
+
+    // Dependências atualizadas para Jetpack Compose
+    implementation("androidx.compose.ui:ui:1.6.0") // Última versão do Compose UI
+    implementation("androidx.compose.material3:material3:1.2.0") // Compose Material 3
+    implementation("androidx.compose.ui:ui-tooling-preview:1.6.0")
+    implementation("androidx.navigation:navigation-compose:2.7.3") // Navegação para Compose
+
+    // Para pré-visualização no Android Studio
+    debugImplementation("androidx.compose.ui:ui-tooling:1.6.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.0")
+
+    // Dependências adicionais
+    implementation("androidx.activity:activity-compose:1.8.0") // Integrar Compose em Activity
 }
