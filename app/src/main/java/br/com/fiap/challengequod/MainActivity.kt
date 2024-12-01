@@ -3,6 +3,7 @@ package br.com.fiap.challengequod
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -15,11 +16,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.fiap.challengequod.ui.screens.BiometriaFacialScreen
+import br.com.fiap.challengequod.ui.screens.DocumentoscopiaScreen
 import br.com.fiap.challengequod.ui.theme.ChallengeQuodTheme
 
 class MainActivity : ComponentActivity() {
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            //permissão garantida
+        } else {
+            // Permissão negada
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
         setContent {
             ChallengeQuodTheme {
                 MeuApp()
@@ -27,6 +40,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
+
 
 @Composable
 fun MeuApp() {
@@ -45,13 +61,13 @@ fun NavigationComponent(navController: NavHostController, modifier: Modifier = M
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen(navController) }
         composable("biometria_facial") {
-            CadastroBiometriaFacialScreen(navController)
+            BiometriaFacialScreen(navController)
         }
         composable("biometria_digital") {
             CadastroBiometriaDigitalScreen(navController)
         }
         composable("documentoscopia") {
-            CadastroDocumentoscopiaScreen(navController)
+            DocumentoscopiaScreen(navController)
         }
         composable("sim_swap") {
             CadastroSimSwapScreen(navController)
