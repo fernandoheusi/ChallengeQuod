@@ -99,7 +99,6 @@ fun HomeScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Biometria Facial
 @Composable
 fun CadastroBiometriaFacialScreen(navController: NavHostController) {
     var result by remember { mutableStateOf<String?>(null) }
@@ -122,7 +121,6 @@ fun CadastroBiometriaFacialScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Biometria Digital
 @Composable
 fun CadastroBiometriaDigitalScreen(navController: NavHostController) {
     var result by remember { mutableStateOf<String?>(null) }
@@ -145,7 +143,6 @@ fun CadastroBiometriaDigitalScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Documentoscopia
 @Composable
 fun CadastroDocumentoscopiaScreen(navController: NavHostController) {
     var result by remember { mutableStateOf<String?>(null) }
@@ -168,7 +165,6 @@ fun CadastroDocumentoscopiaScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de SIM Swap
 @Composable
 fun CadastroSimSwapScreen(navController: NavHostController) {
     var result by remember { mutableStateOf<String?>(null) }
@@ -191,7 +187,6 @@ fun CadastroSimSwapScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Autenticação Cadastral
 @Composable
 fun CadastroAutenticacaoCadastralScreen(navController: NavHostController) {
     var cpf by remember { mutableStateOf("") }
@@ -204,7 +199,7 @@ fun CadastroAutenticacaoCadastralScreen(navController: NavHostController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Cadastro de Autenticação Cadastral", style = MaterialTheme.typography.headlineMedium)
+        Text(text = "Cadastro de Autenticacao Cadastral", style = MaterialTheme.typography.headlineMedium)
         TextField(
             value = cpf,
             onValueChange = { cpf = it },
@@ -230,11 +225,19 @@ fun CadastroAutenticacaoCadastralScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Score Antifraude
+fun isValidCPF(cpf: String): Boolean {
+
+    val cleanedCPF = cpf.replace("[^\\d]".toRegex(), "")
+
+    return cleanedCPF.length == 11 && cleanedCPF.all { it.isDigit() }
+}
+
 @Composable
 fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
     var cpf by remember { mutableStateOf("") }
     var score by remember { mutableStateOf<Int?>(null) }
+    var scoreLevel by remember { mutableStateOf<String?>(null) }
+    var cpfError by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -242,32 +245,59 @@ fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Cadastro de Score Antifraude", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = "Cadastro de Score Antifraude",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
         TextField(
             value = cpf,
             onValueChange = { cpf = it },
             label = { Text("CPF") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            isError = cpfError != null
         )
+
+        cpfError?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error)
+        }
+
         Button(onClick = {
-            score = if (cpf.isNotEmpty()) (300..850).random() else null
+            if (isValidCPF(cpf)) {
+                score = (1..1000).random()
+                scoreLevel = when (score) {
+                    in 0..300 -> "Muito baixo"
+                    in 301..500 -> "Baixo"
+                    in 501..700 -> "Bom"
+                    in 701..1000 -> "Excelente"
+                    else -> "Inválido"
+                }
+                cpfError = null // Limpar erro se o CPF for válido
+            } else {
+                cpfError = "CPF inválido."
+                score = null // Limpar o score se CPF for inválido
+                scoreLevel = null
+            }
         }) {
             Text("Consultar Score")
         }
+
         score?.let {
-            Text(text = "Resultado: Seu Score Antifraude é $it", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = "Seu Score é de $it, $scoreLevel",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            LinearProgressIndicator(
+                progress = it / 1000f,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+            )
         }
+
         Button(onClick = { navController.popBackStack() }) {
             Text("Voltar")
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewApp() {
-    ChallengeQuodTheme {
-        MeuApp()
     }
 }
 
