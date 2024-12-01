@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.fiap.challengequod.ui.screens.BiometriaFacialScreen
+import br.com.fiap.challengequod.ui.screens.CadastroAutenticacaoCadastralScreen
 import br.com.fiap.challengequod.ui.screens.DocumentoscopiaScreen
 import br.com.fiap.challengequod.ui.theme.ChallengeQuodTheme
 
@@ -207,44 +208,7 @@ fun CadastroSimSwapScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Autenticação Cadastral
-@Composable
-fun CadastroAutenticacaoCadastralScreen(navController: NavHostController) {
-    var cpf by remember { mutableStateOf("") }
-    var nome by remember { mutableStateOf("") }
-    var validationResult by remember { mutableStateOf<String?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Autenticação Cadastral", style = MaterialTheme.typography.headlineMedium)
-        TextField(
-            value = cpf,
-            onValueChange = { cpf = it },
-            label = { Text("CPF") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        TextField(value = nome, onValueChange = { nome = it }, label = { Text("Nome") })
-        Button(onClick = {
-            validationResult = if (cpf.isNotEmpty() && nome.isNotEmpty()) {
-                "Sucesso: Dados validados!"
-            } else {
-                "Erro: Preencha todos os campos obrigatórios."
-            }
-        }) {
-            Text("Validar")
-        }
-        validationResult?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
 
 // Cadastro de Score Antifraude
 @Composable
