@@ -79,4 +79,9 @@ dependencies {
 
     // Dependências adicionais
     implementation("androidx.activity:activity-compose:1.8.0") // Integrar Compose em Activity
+
+    //Dependencia biometria
+    implementation("androidx.biometric:biometric:1.1.0")
+
+    implementation("androidx.appcompat:appcompat:1.6.1")//  Permite que recursos modernos sejam usados em dispositivos com versões de API anteriores
 }
