@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -16,12 +18,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.fiap.challengequod.model.Biometric
 import br.com.fiap.challengequod.ui.screens.BiometriaFacialScreen
 import br.com.fiap.challengequod.ui.screens.CadastroAutenticacaoCadastralScreen
+import br.com.fiap.challengequod.ui.screens.CadastroBiometriaDigitalScreen
 import br.com.fiap.challengequod.ui.screens.DocumentoscopiaScreen
 import br.com.fiap.challengequod.ui.theme.ChallengeQuodTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private val promptManager by lazy {
+        Biometric(this)
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -36,7 +44,7 @@ class MainActivity : ComponentActivity() {
         requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
         setContent {
             ChallengeQuodTheme {
-                MeuApp()
+                MeuApp(promptManager)
             }
         }
     }
@@ -46,26 +54,26 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MeuApp() {
+fun MeuApp(promptManager: Biometric) {
     val navController = rememberNavController()
     Scaffold(
         topBar = {
         },
         content = { innerPadding ->
-            NavigationComponent(navController, Modifier.padding(innerPadding))
+            NavigationComponent(navController, Modifier.padding(innerPadding), promptManager)
         }
     )
 }
 
 @Composable
-fun NavigationComponent(navController: NavHostController, modifier: Modifier = Modifier) {
+fun NavigationComponent(navController: NavHostController, modifier: Modifier = Modifier, promptManager: Biometric) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen(navController) }
         composable("biometria_facial") {
             BiometriaFacialScreen(navController)
         }
         composable("biometria_digital") {
-            CadastroBiometriaDigitalScreen(navController)
+            CadastroBiometriaDigitalScreen(navController,promptManager)
         }
         composable("documentoscopia") {
             DocumentoscopiaScreen(navController)
@@ -129,29 +137,6 @@ fun CadastroBiometriaFacialScreen(navController: NavHostController) {
         Text(text = "Cadastro de Biometria Facial", style = MaterialTheme.typography.headlineMedium)
         Button(onClick = { result = "Sucesso: Captura facial bem-sucedida!" }) {
             Text(text = "Capturar Face")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
-
-// Cadastro de Biometria Digital
-@Composable
-fun CadastroBiometriaDigitalScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Biometria Digital", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: Captura digital bem-sucedida!" }) {
-            Text(text = "Capturar Digital")
         }
         result?.let {
             Text(text = it, style = MaterialTheme.typography.bodyMedium)
@@ -243,11 +228,13 @@ fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewApp() {
-    ChallengeQuodTheme {
-        MeuApp()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewApp() {
+//    val context = LocalContext.current
+//    val promptManager = Biometric(context)
+//    ChallengeQuodTheme {
+//        MeuApp(promptManager)
+//    }
+//}
 
