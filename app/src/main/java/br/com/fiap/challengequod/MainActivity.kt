@@ -249,15 +249,18 @@ fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
             text = "Cadastro de Score Antifraude",
             style = MaterialTheme.typography.headlineMedium
         )
-
         TextField(
             value = cpf,
-            onValueChange = { cpf = it },
+            onValueChange = {
+                if (it.length <= 11 && it.all { char -> char.isDigit() }) {
+                    cpf = it
+                }
+            },
             label = { Text("CPF") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            isError = cpfError != null
+            isError = cpfError != null,
+            modifier = Modifier.fillMaxWidth()
         )
-
         cpfError?.let {
             Text(text = it, color = MaterialTheme.colorScheme.error)
         }
@@ -293,6 +296,7 @@ fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .height(16.dp)
             )
+
         }
 
         Button(onClick = { navController.popBackStack() }) {
