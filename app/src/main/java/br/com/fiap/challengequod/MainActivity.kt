@@ -51,14 +51,12 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-
-
-
 @Composable
 fun MeuApp(promptManager: Biometric) {
     val navController = rememberNavController()
     Scaffold(
         topBar = {
+
         },
         content = { innerPadding ->
             NavigationComponent(navController, Modifier.padding(innerPadding), promptManager)
@@ -125,34 +123,19 @@ fun HomeScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Biometria Facial
-@Composable
-fun CadastroBiometriaFacialScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Biometria Facial", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: Captura facial bem-sucedida!" }) {
-            Text(text = "Capturar Face")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
+fun isValidCPF(cpf: String): Boolean {
+
+    val cleanedCPF = cpf.replace("[^\\d]".toRegex(), "")
+
+    return cleanedCPF.length == 11 && cleanedCPF.all { it.isDigit() }
 }
 
-// Cadastro de Score Antifraude
 @Composable
 fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
     var cpf by remember { mutableStateOf("") }
     var score by remember { mutableStateOf<Int?>(null) }
+    var scoreLevel by remember { mutableStateOf<String?>(null) }
+    var cpfError by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -160,25 +143,62 @@ fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Cadastro de Score Antifraude", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = "Cadastro de Score Antifraude",
+            style = MaterialTheme.typography.headlineMedium
+        )
         TextField(
             value = cpf,
-            onValueChange = { cpf = it },
+            onValueChange = {
+                if (it.length <= 11 && it.all { char -> char.isDigit() }) {
+                    cpf = it
+                }
+            },
             label = { Text("CPF") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            isError = cpfError != null,
+            modifier = Modifier.fillMaxWidth()
         )
+        cpfError?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error)
+        }
+
         Button(onClick = {
-            score = if (cpf.isNotEmpty()) (300..850).random() else null
+            if (isValidCPF(cpf)) {
+                score = (1..1000).random()
+                scoreLevel = when (score) {
+                    in 0..300 -> "Muito baixo"
+                    in 301..500 -> "Baixo"
+                    in 501..700 -> "Bom"
+                    in 701..1000 -> "Excelente"
+                    else -> "Inválido"
+                }
+                cpfError = null // Limpar erro se o CPF for válido
+            } else {
+                cpfError = "CPF inválido."
+                score = null // Limpar o score se CPF for inválido
+                scoreLevel = null
+            }
         }) {
             Text("Consultar Score")
         }
+
         score?.let {
-            Text(text = "Resultado: Seu Score Antifraude é $it", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = "Seu Score é de $it, $scoreLevel",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            LinearProgressIndicator(
+                progress = it / 1000f,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+            )
+
         }
+
         Button(onClick = { navController.popBackStack() }) {
             Text("Voltar")
         }
     }
 }
-
-
