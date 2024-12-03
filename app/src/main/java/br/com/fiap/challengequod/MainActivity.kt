@@ -33,6 +33,7 @@ fun MeuApp() {
     val navController = rememberNavController()
     Scaffold(
         topBar = {
+
         },
         content = { innerPadding ->
             NavigationComponent(navController, Modifier.padding(innerPadding))
