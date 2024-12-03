@@ -22,11 +22,8 @@ import br.com.fiap.challengequod.ui.components.CustomButton
 @Composable
 fun DocumentoscopiaScreen(navController: NavHostController) {
     val context = LocalContext.current
-
-    // Estado para armazenar a imagem capturada
     var capturedImage by remember { mutableStateOf<Bitmap?>(null) }
 
-    // Lançador para iniciar a captura da imagem
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
         if (bitmap != null) {
             capturedImage = bitmap
@@ -41,13 +38,12 @@ fun DocumentoscopiaScreen(navController: NavHostController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Título
+
         Text(
             text = "Cadastro de Documentoscopia",
             style = MaterialTheme.typography.headlineMedium
         )
 
-        // Botão para capturar documento
         CustomButton(
             text = "Capturar Documento",
             onClick = {
@@ -56,7 +52,6 @@ fun DocumentoscopiaScreen(navController: NavHostController) {
             }
         )
 
-        // Exibir a imagem capturada, se disponível
         capturedImage?.let {
             Image(
                 bitmap = it.asImageBitmap(),
@@ -67,7 +62,6 @@ fun DocumentoscopiaScreen(navController: NavHostController) {
             )
         }
 
-        // Botão para voltar à tela inicial
         CustomButton(
             text = "Voltar",
             onClick = {

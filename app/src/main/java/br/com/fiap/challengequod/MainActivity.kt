@@ -23,6 +23,7 @@ import br.com.fiap.challengequod.ui.screens.BiometriaFacialScreen
 import br.com.fiap.challengequod.ui.screens.CadastroAutenticacaoCadastralScreen
 import br.com.fiap.challengequod.ui.screens.CadastroBiometriaDigitalScreen
 import br.com.fiap.challengequod.ui.screens.DocumentoscopiaScreen
+import br.com.fiap.challengequod.ui.screens.SimSwapScreen
 import br.com.fiap.challengequod.ui.theme.ChallengeQuodTheme
 
 class MainActivity : AppCompatActivity() {
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            //permissão garantida
+            // permissão garantida
         } else {
             // Permissão negada
         }
@@ -79,7 +80,7 @@ fun NavigationComponent(navController: NavHostController, modifier: Modifier = M
             DocumentoscopiaScreen(navController)
         }
         composable("sim_swap") {
-            CadastroSimSwapScreen(navController)
+            SimSwapScreen(navController)
         }
         composable("autenticacao_cadastral") {
             CadastroAutenticacaoCadastralScreen(navController)
@@ -147,54 +148,6 @@ fun CadastroBiometriaFacialScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Documentoscopia
-@Composable
-fun CadastroDocumentoscopiaScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Documentoscopia", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: Documento validado!" }) {
-            Text(text = "Validar Documento")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
-
-// Cadastro de SIM Swap
-@Composable
-fun CadastroSimSwapScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de SIM Swap", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: SIM Swap confirmado!" }) {
-            Text(text = "Confirmar SIM Swap")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
-
-
-
 // Cadastro de Score Antifraude
 @Composable
 fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
@@ -228,13 +181,4 @@ fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewApp() {
-//    val context = LocalContext.current
-//    val promptManager = Biometric(context)
-//    ChallengeQuodTheme {
-//        MeuApp(promptManager)
-//    }
-//}
 
