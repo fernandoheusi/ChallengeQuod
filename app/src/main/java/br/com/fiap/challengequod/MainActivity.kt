@@ -1,5 +1,6 @@
 package br.com.fiap.challengequod
 
+import CadastroScoreAntifraudeScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -148,37 +149,6 @@ fun CadastroBiometriaFacialScreen(navController: NavHostController) {
     }
 }
 
-// Cadastro de Score Antifraude
-@Composable
-fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
-    var cpf by remember { mutableStateOf("") }
-    var score by remember { mutableStateOf<Int?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Score Antifraude", style = MaterialTheme.typography.headlineMedium)
-        TextField(
-            value = cpf,
-            onValueChange = { cpf = it },
-            label = { Text("CPF") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        Button(onClick = {
-            score = if (cpf.isNotEmpty()) (300..850).random() else null
-        }) {
-            Text("Consultar Score")
-        }
-        score?.let {
-            Text(text = "Resultado: Seu Score Antifraude é $it", style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
 
 
