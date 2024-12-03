@@ -3,11 +3,14 @@ package br.com.fiap.challengequod
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -15,47 +18,67 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.fiap.challengequod.model.Biometric
+import br.com.fiap.challengequod.ui.screens.BiometriaFacialScreen
+import br.com.fiap.challengequod.ui.screens.CadastroAutenticacaoCadastralScreen
+import br.com.fiap.challengequod.ui.screens.CadastroBiometriaDigitalScreen
+import br.com.fiap.challengequod.ui.screens.DocumentoscopiaScreen
+import br.com.fiap.challengequod.ui.screens.SimSwapScreen
 import br.com.fiap.challengequod.ui.theme.ChallengeQuodTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private val promptManager by lazy {
+        Biometric(this)
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // permissão garantida
+        } else {
+            // Permissão negada
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
         setContent {
             ChallengeQuodTheme {
-                MeuApp()
+                MeuApp(promptManager)
             }
         }
     }
 }
 
 @Composable
-fun MeuApp() {
+fun MeuApp(promptManager: Biometric) {
     val navController = rememberNavController()
     Scaffold(
         topBar = {
 
         },
         content = { innerPadding ->
-            NavigationComponent(navController, Modifier.padding(innerPadding))
+            NavigationComponent(navController, Modifier.padding(innerPadding), promptManager)
         }
     )
 }
 
 @Composable
-fun NavigationComponent(navController: NavHostController, modifier: Modifier = Modifier) {
+fun NavigationComponent(navController: NavHostController, modifier: Modifier = Modifier, promptManager: Biometric) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen(navController) }
         composable("biometria_facial") {
-            CadastroBiometriaFacialScreen(navController)
+            BiometriaFacialScreen(navController)
         }
         composable("biometria_digital") {
-            CadastroBiometriaDigitalScreen(navController)
+            CadastroBiometriaDigitalScreen(navController,promptManager)
         }
         composable("documentoscopia") {
-            CadastroDocumentoscopiaScreen(navController)
+            DocumentoscopiaScreen(navController)
         }
         composable("sim_swap") {
-            CadastroSimSwapScreen(navController)
+            SimSwapScreen(navController)
         }
         composable("autenticacao_cadastral") {
             CadastroAutenticacaoCadastralScreen(navController)
@@ -96,132 +119,6 @@ fun HomeScreen(navController: NavHostController) {
         }
         Button(onClick = { navController.navigate("score_anti_fraude") }) {
             Text("Cadastrar Score Antifraude")
-        }
-    }
-}
-
-@Composable
-fun CadastroBiometriaFacialScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Biometria Facial", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: Captura facial bem-sucedida!" }) {
-            Text(text = "Capturar Face")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
-
-@Composable
-fun CadastroBiometriaDigitalScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Biometria Digital", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: Captura digital bem-sucedida!" }) {
-            Text(text = "Capturar Digital")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
-
-@Composable
-fun CadastroDocumentoscopiaScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Documentoscopia", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: Documento validado!" }) {
-            Text(text = "Validar Documento")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
-
-@Composable
-fun CadastroSimSwapScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de SIM Swap", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: SIM Swap confirmado!" }) {
-            Text(text = "Confirmar SIM Swap")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
-        }
-    }
-}
-
-@Composable
-fun CadastroAutenticacaoCadastralScreen(navController: NavHostController) {
-    var cpf by remember { mutableStateOf("") }
-    var nome by remember { mutableStateOf("") }
-    var validationResult by remember { mutableStateOf<String?>(null) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Cadastro de Autenticacao Cadastral", style = MaterialTheme.typography.headlineMedium)
-        TextField(
-            value = cpf,
-            onValueChange = { cpf = it },
-            label = { Text("CPF") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        TextField(value = nome, onValueChange = { nome = it }, label = { Text("Nome") })
-        Button(onClick = {
-            validationResult = if (cpf.isNotEmpty() && nome.isNotEmpty()) {
-                "Sucesso: Dados validados!"
-            } else {
-                "Erro: Preencha todos os campos obrigatórios."
-            }
-        }) {
-            Text("Validar")
-        }
-        validationResult?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
         }
     }
 }
@@ -305,4 +202,3 @@ fun CadastroScoreAntifraudeScreen(navController: NavHostController) {
         }
     }
 }
-
