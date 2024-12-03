@@ -2,18 +2,25 @@ package br.com.fiap.challengequod
 
 import CadastroScoreAntifraudeScreen
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -51,9 +58,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
 
 @Composable
 fun MeuApp(promptManager: Biometric) {
@@ -94,61 +98,127 @@ fun NavigationComponent(navController: NavHostController, modifier: Modifier = M
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(16.dp)
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
+        // Adicionando a logo
+        Image(
+            painter = painterResource(id = R.drawable.logo_quod), // Substitua pelo ID da sua imagem
+            contentDescription = "Logo Quod",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp)
+                .padding(bottom = 16.dp)
+        )
+
         Text(
-            text = "Escolha uma demonstração para cadastrar:",
+            text = "Pilares para Mitigar o Risco de Fraude",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        Button(onClick = { navController.navigate("biometria_facial") }) {
-            Text("Cadastrar Biometria Facial")
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PillarCard(
+                title = "Biometria Facial",
+                description = "Autenticação através da câmera",
+                icon = Icons.Default.Face,
+                onClick = { navController.navigate("biometria_facial") },
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
+
+            PillarCard(
+                title = "Biometria Digital",
+                description = "Funcionalidade que testa a autenticação de biometria digital.",
+                icon = Icons.Default.ThumbUp,
+                onClick = { navController.navigate("biometria_digital") },
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
         }
-        Button(onClick = { navController.navigate("biometria_digital") }) {
-            Text("Cadastrar Biometria Digital")
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PillarCard(
+                title = "Documentoscopia",
+                description = "Verificação de documentos",
+                icon = Icons.Default.Check,
+                onClick = { navController.navigate("documentoscopia") },
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
+
+            PillarCard(
+                title = "SIM SWAP",
+                description = "Teste de troca de SIM",
+                icon = Icons.Default.Lock,
+                onClick = { navController.navigate("sim_swap") },
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
         }
-        Button(onClick = { navController.navigate("documentoscopia") }) {
-            Text("Cadastrar Documentoscopia")
-        }
-        Button(onClick = { navController.navigate("sim_swap") }) {
-            Text("Cadastrar SIM Swap")
-        }
-        Button(onClick = { navController.navigate("autenticacao_cadastral") }) {
-            Text("Cadastrar Autenticação Cadastral")
-        }
-        Button(onClick = { navController.navigate("score_anti_fraude") }) {
-            Text("Cadastrar Score Antifraude")
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PillarCard(
+                title = "Autenticação Cadastral",
+                description = "Cadastro e validação de dados",
+                icon = Icons.Default.Search,
+                onClick = { navController.navigate("autenticacao_cadastral") },
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
+
+            PillarCard(
+                title = "Score Antifraude",
+                description = "Análise do score de risco",
+                icon = Icons.Default.Warning,
+                onClick = { navController.navigate("score_anti_fraude") },
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
         }
     }
 }
 
-// Cadastro de Biometria Facial
 @Composable
-fun CadastroBiometriaFacialScreen(navController: NavHostController) {
-    var result by remember { mutableStateOf<String?>(null) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+fun PillarCard(
+    title: String,
+    description: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(150.dp), // Adicionado altura fixa para uniformidade
+        elevation = CardDefaults.cardElevation(4.dp),
+        onClick = onClick
     ) {
-        Text(text = "Cadastro de Biometria Facial", style = MaterialTheme.typography.headlineMedium)
-        Button(onClick = { result = "Sucesso: Captura facial bem-sucedida!" }) {
-            Text(text = "Capturar Face")
-        }
-        result?.let {
-            Text(text = it, style = MaterialTheme.typography.bodyMedium)
-        }
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Voltar")
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                modifier = Modifier.size(40.dp)
+            )
+            Text(text = title, style = MaterialTheme.typography.titleMedium)
+            Text(text = description, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
-
 
 
 
